@@ -23,6 +23,13 @@ void interrupt_handler(cpu_state_t cpus, stack_state_t stack, unsigned int inter
     (void)cpus;
     (void)stack;
 
+    if(interrupt == 32)
+    {
+        pic_acknowledge_interrupt(interrupt);
+        return;
+    }
+
+
     if(interrupt == KEYBOARD_INTERRUPT)
     {
         

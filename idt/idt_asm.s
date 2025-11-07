@@ -73,6 +73,24 @@ error_code_interrupt_handler 11
 error_code_interrupt_handler 12
 error_code_interrupt_handler 13
 error_code_interrupt_handler 14
+no_error_code_interrupt_handler 15
+no_error_code_interrupt_handler 16
+error_code_interrupt_handler 17
+no_error_code_interrupt_handler 18
+no_error_code_interrupt_handler 19
+no_error_code_interrupt_handler 20
+error_code_interrupt_handler 21
+no_error_code_interrupt_handler 23
+no_error_code_interrupt_handler 24
+no_error_code_interrupt_handler 25
+no_error_code_interrupt_handler 26
+no_error_code_interrupt_handler 27
+no_error_code_interrupt_handler 28
+error_code_interrupt_handler 29
+error_code_interrupt_handler 30
+no_error_code_interrupt_handler 31
+
+no_error_code_interrupt_handler 32
 
 no_error_code_interrupt_handler 33
 

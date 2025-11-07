@@ -25,17 +25,17 @@ void interrupt_handler(cpu_state_t cpus, stack_state_t stack, unsigned int inter
 
     if(interrupt == KEYBOARD_INTERRUPT)
     {
-        /*
+        
         unsigned char scancode = keyboard_read_scancode();
         unsigned char ascii = map_keyboard_scan_to_ascii(scancode);
-        */
-        /*
+        
+        
         if (ascii != 0)
         {
             char str[2] = {ascii, '\0'};
             printf(str, 1);
         }
-        */
+        
         
         pic_acknowledge_interrupt(interrupt);
     }
@@ -82,5 +82,5 @@ void init_idt(void)
     set_idt_entry(KEYBOARD_INTERRUPT, (unsigned int)interrupt_handler_33);
     pic_remap();
     load_idt((unsigned int)&idt_ptr);
-    outb(MASTER_PIC_DATA_PORT, 0xFD);
+    outb(MASTER_PIC_DATA_PORT, 0xFC);
 }

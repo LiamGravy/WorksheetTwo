@@ -80,6 +80,7 @@ no_error_code_interrupt_handler 18
 no_error_code_interrupt_handler 19
 no_error_code_interrupt_handler 20
 error_code_interrupt_handler 21
+no_error_code_interrupt_handler 22
 no_error_code_interrupt_handler 23
 no_error_code_interrupt_handler 24
 no_error_code_interrupt_handler 25

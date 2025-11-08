@@ -34,13 +34,14 @@ common_interrupt_handler: ;The common parts of the generic interrupt interrupt_h
 
     call interrupt_handler
 ;Restore the registers
-    pop eax
-    pop ebx
-    pop ecx
-    pop edx
-    pop esi
-    pop edi
+    pop esp
     pop ebp
+    pop edi
+    pop esi
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
     add esp, 8 ;remove the pushed esp and interrupt number from the stack
     iret ;Return to the code that got interrupted
 

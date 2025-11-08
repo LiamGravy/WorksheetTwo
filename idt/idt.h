@@ -44,7 +44,7 @@ struct stack_state_struct
 
 typedef struct stack_state_struct stack_state_t;
 
-void interrupt_handler(cpu_state_t cpu, stack_state_t stack, unsigned int interrupt);
+void interrupt_handler(cpu_state_t cpu, unsigned int interrupt, stack_state_t stack);
 void init_idt(void);
 extern void load_idt(unsigned int);
 extern void enable_interrupts(void);

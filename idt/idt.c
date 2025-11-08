@@ -18,7 +18,7 @@ void set_idt_entry(unsigned int index, unsigned int isr_address)
     idt[index].attributes = (0x01 << 7) | (0x00 << 6) | (0x00 <<5) | 0xe;
 }
 
-void interrupt_handler(cpu_state_t cpus, stack_state_t stack, unsigned int interrupt)
+void interrupt_handler(cpu_state_t cpus, unsigned int interrupt, stack_state_t stack)
 {
     (void)cpus;
     (void)stack;

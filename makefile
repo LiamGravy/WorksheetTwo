@@ -17,7 +17,7 @@ build:
 	genisoimage -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -A os -input-charset utf8 -quiet -boot-info-table -o ./iso/os.iso iso
 
 run:
-	qemu-system-i386 -display curses -monitor telnet::45454,server,nowait -serial file:seriallog.txt -boot d -cdrom ./iso/os.iso -m 32 -d cpu -D logQ.txt
+	qemu-system-i386 -display curses -monitor telnet::45455,server,nowait -serial file:seriallog.txt -boot d -cdrom ./iso/os.iso -m 32 -d cpu -D logQ.txt
 
 clean:
 	rm -f *.o

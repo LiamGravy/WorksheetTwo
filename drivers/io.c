@@ -84,7 +84,7 @@ void clear_screen()
     {
         if (i % 80 == 0)
         {
-            framebuffer_write_cell(i, '|', FB_WHITE, BG_BLACK);
+            framebuffer_write_cell(i, '>', FB_WHITE, BG_BLACK);
         }
         else 
         {

@@ -91,10 +91,45 @@ no_error_code_interrupt_handler 28
 error_code_interrupt_handler 29
 error_code_interrupt_handler 30
 no_error_code_interrupt_handler 31
-
 no_error_code_interrupt_handler 32
-
 no_error_code_interrupt_handler 33
 
+global interrupt_handlers
+section .data
+interrupt_handlers:
+    dd interrupt_handler_0
+    dd interrupt_handler_1
+    dd interrupt_handler_2
+    dd interrupt_handler_3
+    dd interrupt_handler_4
+    dd interrupt_handler_5
+    dd interrupt_handler_6
+    dd interrupt_handler_7
+    dd interrupt_handler_8
+    dd interrupt_handler_9
+    dd interrupt_handler_10
+    dd interrupt_handler_11
+    dd interrupt_handler_12
+    dd interrupt_handler_13
+    dd interrupt_handler_14
+    dd interrupt_handler_15
+    dd interrupt_handler_16
+    dd interrupt_handler_17
+    dd interrupt_handler_18
+    dd interrupt_handler_19
+    dd interrupt_handler_20
+    dd interrupt_handler_21
+    dd interrupt_handler_22
+    dd interrupt_handler_23
+    dd interrupt_handler_24
+    dd interrupt_handler_25
+    dd interrupt_handler_26
+    dd interrupt_handler_27
+    dd interrupt_handler_28
+    dd interrupt_handler_29
+    dd interrupt_handler_30
+    dd interrupt_handler_31
+    dd interrupt_handler_32
+    dd interrupt_handler_33
 
 

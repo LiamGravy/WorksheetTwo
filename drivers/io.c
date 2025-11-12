@@ -1,20 +1,6 @@
 #include "io.h"
 
-#define FB_COMMAND_PORT 0x3D4
-#define FB_DATA_PORT 0x3D5
-
-#define FB_HIGH_BYTE_COMMAND 14
-#define FB_LOW_BYTE_COMMAND 15
-
-#define SERIAL_CON1_BASE 0x3F8
-#define SERIAL_DATA_PORT(base) (base) 
-#define SERIAL_FIFO_COMMAND_PORT(base) (base + 2)
-#define SERIAL_LINE_COMMAND_PORT(base) (base + 3)
-#define SERIAL_MODEM_COMMAND_PORT(base) (base + 4)
-#define SERIAL_LINE_STATUS_PORT(base) (base + 5) 
-
-#define SERIAL_LINE_ENABLE_DLAB 0x80 //Tells the serial port to expect the highest 8 bits on the data port, then the lower 8 bits will follow.
-
+// Framebuffer cursor position and text colours
 static unsigned int cursor_position = 0;
 static unsigned int fg_colour = FB_WHITE;
 static unsigned int bg_colour = BG_BLACK;

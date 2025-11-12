@@ -32,7 +32,8 @@ void interrupt_handler(cpu_state_t cpus, unsigned int interrupt, stack_state_t s
 
     if(interrupt == KEYBOARD_INTERRUPT)
     {
-        
+        keyboard_interrupt();  
+        /* 
         unsigned char scancode = keyboard_read_scancode();
         unsigned char ascii = map_keyboard_scan_to_ascii(scancode);
         
@@ -42,7 +43,7 @@ void interrupt_handler(cpu_state_t cpus, unsigned int interrupt, stack_state_t s
             char str[2] = {ascii, '\0'};
             printf(str, 1);
         }
-        
+        */
         
         pic_acknowledge_interrupt(interrupt);        
         return;

@@ -1,4 +1,4 @@
-all: clean build run
+all: clean build run clean
 
 build:
 	gcc -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c kmain.c -o kmain.o
@@ -17,13 +17,14 @@ build:
 	genisoimage -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -A os -input-charset utf8 -quiet -boot-info-table -o ./iso/os.iso iso
 
 run:
-	qemu-system-i386 -display curses -monitor telnet::45455,server,nowait -serial file:seriallog.txt -boot d -cdrom ./iso/os.iso -m 32 -d cpu -D logQ.txt
-
+	qemu-system-i386 -display curses -monitor telnet::45455,server,nowait -serial file:seriallog.txt -boot d -cdrom ./iso/os.iso -m 32 -d cpu -D logQ.txt -device isa-debug-exit,iobase=0xf4 || true
+	clear
 clean:
 	rm -f *.o
 	rm -f ./iso/os.iso
 	rm -f iso/boot/kernel.elf
 	rm -f logQ.txt
+	rm -f seriallog.txt
 	rm -f ./drivers/*.o
 	rm -f ./gdt/*.o
 	rm -f ./idt/*.o

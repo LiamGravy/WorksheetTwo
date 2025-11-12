@@ -71,4 +71,6 @@ void set_cursor_position(unsigned int x, unsigned int y);
 void set_text_colour(unsigned int fg, unsigned int bg);
 void newline();
 void io_wait(void);
+int get_cursor_position();
+char framebuffer_read_cell(unsigned int i);
 #endif

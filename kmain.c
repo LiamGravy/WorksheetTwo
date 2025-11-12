@@ -33,13 +33,7 @@ void kmain()
 {
     init_gdt();
     init_idt();
-
     clear_screen();
-    serial_write_string(0x3F8, "This is the serial port fyi...\n");
-    //printf("print('Hello World!')", 1);
-    //newline();
     set_text_colour(FB_GREEN, BG_BLUE);
-    //printf("Hello World!", 1);
-
     enable_interrupts();
 }

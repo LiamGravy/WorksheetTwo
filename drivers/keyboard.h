@@ -8,4 +8,5 @@ unsigned char map_keyboard_scan_to_ascii(unsigned char scan_code);
 
 void buffer_keyboard_input(unsigned char scancode);
 unsigned char keyboard_get_char(void);
+void keyboard_interrupt(void);
 #endif

@@ -22,14 +22,14 @@ interrupt_handler_%1:
 
 common_interrupt_handler: ;The common parts of the generic interrupt interrupt_handler
 ;Save the registers
-    push eax
+    push eax 
     push ebx
     push ecx
     push edx
     push esi
     push edi
     push ebp
-    push esp
+    push esp 
     
 
     call interrupt_handler

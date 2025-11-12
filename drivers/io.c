@@ -152,10 +152,26 @@ void set_text_colour(unsigned int fg, unsigned int bg)
 
 void newline()
 {
-    framebuffer_move_cursor(((cursor_position/80) + 1) * 80);
+    unsigned int new_position = ((cursor_position/80) + 1) * 80;
+    if (new_position % 80 == 0)
+    {
+        new_position++;
+    }
+    framebuffer_move_cursor(new_position);
 }
 
 void io_wait(void)
 {
     outb(0x80, 0);
+}
+
+int get_cursor_position()
+{
+    return cursor_position;
+}
+
+char framebuffer_read_cell(unsigned int i)
+{
+    char *fb = (char *) 0x000B8000;
+    return fb[i * 2];  
 }

@@ -3,8 +3,8 @@
 
 #define KEYBOARD_BUFFER_SIZE 256
 static unsigned char keyboard_buffer[KEYBOARD_BUFFER_SIZE];
-static unsigned int buffer_read_pointer = 0;
-static unsigned int buffer_write_pointer = 0;
+static unsigned char* buffer_head_pointer = 0;
+static unsigned char* buffer_tail_pointer = 0;
 
 
 unsigned char keyboard_read_scancode(void)
@@ -15,37 +15,41 @@ unsigned char keyboard_read_scancode(void)
 unsigned char map_keyboard_scan_to_ascii(unsigned char scan_code)
 {
     unsigned char ascii[256] =
-    {0,  27, '1','2','3','4','5','6','7','8','9','0','-','=', '\b', //The escape key character is
+    {0,  27, '1','2','3','4','5','6','7','8','9','0','-','=', '\b', 
     '\t', 'q','w','e','r','t','y','u','i','o','p','[',']','\n', 0, 
     'a','s','d','f','g','h','j','k','l',';','\'','`', 0, '\\',
     'z','x','c','v','b','n','m',',','.','/', 0, '*', 0, ' ', 0};
     return ascii[scan_code];
 }
 
-void buffer_keyboard_input(unsigned char scancode)
+void buffer_keyboard_input(unsigned char ascii_char)
 {
-    unsigned char ascii_char = map_keyboard_scan_to_ascii(scancode);
-    if (ascii_char != 0)
+    unsigned char* max_size = keyboard_buffer + KEYBOARD_BUFFER_SIZE; //pointer to the end of the buffer
+    unsigned char* new_tail_pointer = buffer_tail_pointer + 1; // Pointer to the next position to write to
+
+    if (new_tail_pointer == max_size) //  Checks to see if the buffer is at max size
     {
-        if ((buffer_write_pointer + 1) % KEYBOARD_BUFFER_SIZE == buffer_read_pointer)
-        {
-            // Buffer is full, discard the character
-            return;
-        }
-        keyboard_buffer[buffer_write_pointer] = ascii_char;
-        buffer_write_pointer = (buffer_write_pointer + 1) % KEYBOARD_BUFFER_SIZE;
+        new_tail_pointer = keyboard_buffer; // Wraps around to the start of the buffer
     }
+
+    if (new_tail_pointer == buffer_head_pointer) // If the buffer is full of characters
+    {
+        buffer_head_pointer++; // Advances the read pointer to make space - This overwrites the oldest character
+        if (buffer_head_pointer == max_size) // Wraps around if needed
+        {
+            buffer_head_pointer = keyboard_buffer;
+        }
+    }
+    *buffer_tail_pointer = ascii_char; // Writes the character to the buffer
+    buffer_tail_pointer = new_tail_pointer; // Advances the write pointer
 
 }
 
-unsigned char keyboard_get_char(void)
+unsigned char keyboard_get_char()
 {
-    if (buffer_read_pointer == buffer_write_pointer)
-    {
-        return 0;
-    }
-    unsigned char c = keyboard_buffer[buffer_read_pointer];
-    buffer_read_pointer = (buffer_read_pointer + 1) % KEYBOARD_BUFFER_SIZE;
+
+    unsigned char c = keyboard_buffer[buffer_head_pointer];
+    buffer_head_pointer = (buffer_head_pointer + 1) % KEYBOARD_BUFFER_SIZE;
     return c;
 }
 
@@ -88,6 +92,7 @@ void keyboard_interrupt()
             }
             else if (ascii == '\n')
             {
+                //Jump to the shell file to check if it is a command
                 newline();
                 return;
             }

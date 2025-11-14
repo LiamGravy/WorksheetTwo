@@ -7,13 +7,14 @@ build:
 	gcc -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c ./idt/idt.c -o ./idt/idt.o
 	gcc -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c ./idt/pic.c -o ./idt/pic.o
 	gcc -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c ./drivers/keyboard.c -o ./drivers/keyboard.o
+	gcc -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c ./drivers/shell.c -o ./drivers/shell.o
 
 	nasm -f elf loader.s -o loader.o
 	nasm -f elf ./drivers/io.s -o ./drivers/io_asm.o
 	nasm -f elf ./gdt/gdt_asm.s -o ./gdt/gdt_asm.o
 	nasm -f elf ./idt/idt_asm.s -o ./idt/idt_asm.o
 
-	ld -T ./source/link.ld -melf_i386 loader.o kmain.o ./drivers/io.o ./drivers/io_asm.o ./gdt/gdt.o ./gdt/gdt_asm.o ./idt/idt.o ./idt/idt_asm.o ./drivers/keyboard.o ./idt/pic.o -o ./iso/boot/kernel.elf
+	ld -T ./source/link.ld -melf_i386 loader.o kmain.o ./drivers/io.o ./drivers/io_asm.o ./gdt/gdt.o ./gdt/gdt_asm.o ./idt/idt.o ./idt/idt_asm.o ./drivers/keyboard.o ./idt/pic.o ./drivers/shell.o -o ./iso/boot/kernel.elf
 	genisoimage -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -A os -input-charset utf8 -quiet -boot-info-table -o ./iso/os.iso iso
 
 run:

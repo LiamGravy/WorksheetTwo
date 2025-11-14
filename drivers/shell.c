@@ -2,32 +2,15 @@
 #include "io.h"
 #include "keyboard.h"
 
+void shell_print(char* args);
+void shell_exit(char* args);
+void shell_help(char* args);
+
 struct Command //Creates the template for the Shell Commands 
 {
     const char* name;
     void(*function)(char* args);
 };
-
-void shell_print(char* args)
-{
-    printf(args, 1); //Prints to the framebuffer
-}
-
-void shell_exit(char* args)
-{
-    outb(EXIT_PORT, EXIT_CODE); // Exit QEMU
-}
-
-void shell_help(char* args)
-{
-    printf("Available commands:\n", 1);
-    for (int i = 0; ShellCommands[i].name != 0; i++) //Loops through ShellCommands array 
-    {
-        printf(" - ", 1);
-        printf(ShellCommands[i].name, 1); //Prints out each command name
-        printf("\n", 1);
-    }
-}
 
 static struct Command ShellCommands[] = 
 {
@@ -37,13 +20,38 @@ static struct Command ShellCommands[] =
     {0, 0} //Null command to signify end of array
 };
 
+void shell_print(char* args)
+{
+    printf(args, 1); //Prints to the framebuffer
+}
+
+void shell_exit(char* args)
+{
+    (void)args; //args not needed
+    outb(EXIT_PORT, EXIT_CODE); // Exit QEMU
+}
+
+void shell_help(char* args)
+{
+    (void)args; //args not needed
+    printf("Available commands:\n", 1);
+    for (int i = 0; ShellCommands[i].name != 0; i++) //Loops through ShellCommands array 
+    {
+        printf(" - ", 1);
+        printf(ShellCommands[i].name, 1); //Prints out each command name
+        newline();
+    }
+}
+
+
+
 //Processing the input
 
 void get_buffer(char* input_buffer)
 {
     int index = 0;
     char c;
-    while(c = keyboard_pop_head_char())
+    while((c = keyboard_pop_head_char()) != 0)
     {
         if (index >= 255) //Exits while loop if buffer full
         {

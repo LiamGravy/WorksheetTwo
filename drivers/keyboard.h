@@ -1,12 +1,12 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#define KEYBOARD_DATA_PORT 0x60
+#define KEYBOARD_DATA_PORT 0x60 // I/O port for keyboard data
 
-unsigned char keyboard_read_scancode(void);
-unsigned char map_keyboard_scan_to_ascii(unsigned char scan_code);
+unsigned char keyboard_read_scancode(void); //Reads a scancode from the keyboard data port
+unsigned char map_keyboard_scan_to_ascii(unsigned char scan_code); //Maps scan codes to ASCII characters
 
-void buffer_keyboard_input(unsigned char scancode);
-unsigned char keyboard_get_char(void);
-void keyboard_interrupt(void);
+void buffer_keyboard_input(unsigned char scancode); //Buffers keyboard input characters
+unsigned char keyboard_pop_head_char(void); //Gets a character from the keyboard buffer
+void keyboard_interrupt(void); //Handles keyboard interrupts
 #endif

@@ -37,7 +37,7 @@ void kmain()
 {
     init_gdt(); // Initialize the Global Descriptor Table
     init_idt(); // Initialize the Interrupt Descriptor Table
-    clear_screen(); //Clear the screen of all the initial junk
+    //clear_screen(); //Clear the screen of all the initial junk
     set_text_colour(FB_GREEN, BG_BLUE); // Set the fg and bg colours for text output (colours found in io.h)
     enable_interrupts(); //Enables interrupts 
 }

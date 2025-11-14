@@ -92,6 +92,24 @@ void split_after_space(char* buffer, char* arguments)
     }
 }
 
+int string_comparison(char* string1, char* string2)
+{
+    int index = 0;
+    while(string1[index] != '\0' && string2[index] != '\0') //Loops until null terminator
+    {
+        if (string1[index] != string2[index]) //If characters don't match
+        {
+            return 0; //Strings are not equal
+        }
+        index++;
+    }
+    if (string1[index] == '\0' && string2[index] == '\0') //If both strings end at the same time
+    {
+        return 1; //Strings are equal
+    }
+    return 0; //Strings are not equal
+}
+
 void process_input(void)
 {
     char input_buffer[256];
@@ -104,5 +122,15 @@ void process_input(void)
     //Split the input into function and arguments
     split_on_space(input_buffer, function);
     split_after_space(input_buffer, arguments);
+
+    //Find and execute the command
+    for (int i = 0; ShellCommands[i].name != 0; i++) //Loops through ShellCommands array 
+    {
+        if (string_comparison(function, (char*)ShellCommands[i].name)) //Compares the input function to the command name
+        {
+            ShellCommands[i].function(arguments); //Calls the function with the arguments
+            return; //Exits the function after executing the command
+        }
+    }
 
 }

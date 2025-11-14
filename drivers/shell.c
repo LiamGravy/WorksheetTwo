@@ -39,14 +39,13 @@ static struct Command ShellCommands[] =
 
 //Processing the input
 
-char* get_buffer()
+void get_buffer(char* input_buffer)
 {
-    char input_buffer[256]; //Buffer to hold the input command
     int index = 0;
     char c;
     while(c = keyboard_pop_head_char())
     {
-        if (c == '\n' || index >= 255) //Exits while loop if newline or buffer full
+        if (index >= 255) //Exits while loop if buffer full
         {
             input_buffer[index] = '\0'; //Null terminate the string
             break;
@@ -57,9 +56,8 @@ char* get_buffer()
     return input_buffer; //Returns the buffer
 }
 
-char* split_on_space(char* buffer)
+void split_on_space(char* buffer, char* function)
 {
-    char function[256]; //Buffer to hold the function
     int index = 0; 
     while(buffer[index] != ' ' && buffer[index] != '\0') //Loops until space or null terminator
     {
@@ -69,9 +67,8 @@ char* split_on_space(char* buffer)
     return function; //Returns the function array
 }
 
-char* split_after_space(char* buffer)
+void split_after_space(char* buffer, char* arguments)
 {
-    char arguments[256]; //Buffer to hold the arguments
     int buffer_index = 0;
     int arg_index = 0;
     while(buffer[buffer_index] != ' ' && buffer[buffer_index] != '\0')
@@ -93,5 +90,20 @@ char* split_after_space(char* buffer)
     {
         arguments[arg_index] = '\0'; //Null terminate the string if null terminator reached
     }
-    return arguments ; //Returns the arguments array
+    return arguments; //Returns the arguments array
+}
+
+void process_input(void)
+{
+    char input_buffer[256];
+    char function[256];
+    char arguments[256];
+
+    //Get the input from the keyboard buffer
+    get_buffer(input_buffer);
+
+    //Split the input into function and arguments
+    split_on_space(input_buffer, function);
+    split_after_space(input_buffer, arguments);
+
 }

@@ -102,9 +102,9 @@ void keyboard_interrupt()
                 newline(); //Writes a newline 
                 return;
             }
-            else if (ascii == 27) //Checks if the character is the escape key
+            else if (ascii == ESC) //Checks if the character is the escape key
             {
-                outb(0xf4, 0x00);  // Exit QEMU
+                outb(EXIT_PORT, EXIT_CODE);  // Exit QEMU
                 return;
             }
             else                  //Prints the input character

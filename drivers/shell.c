@@ -53,7 +53,6 @@ void get_buffer(char* input_buffer)
         input_buffer[index] = c; //Stores the character in the buffer
         index++;
     };
-    return input_buffer; //Returns the buffer
 }
 
 void split_on_space(char* buffer, char* function)
@@ -64,7 +63,7 @@ void split_on_space(char* buffer, char* function)
         function[index] = buffer[index]; //Stores the character in the function buffer
         index++;
     }
-    return function; //Returns the function array
+    function[index] = '\0'; //Null terminate the string
 }
 
 void split_after_space(char* buffer, char* arguments)
@@ -85,12 +84,12 @@ void split_after_space(char* buffer, char* arguments)
             buffer_index++;
             arg_index++;
         }
+        arguments[arg_index] = '\0'; //Null terminate the string
     }
     else if (buffer[buffer_index] == '\0')
     {
         arguments[arg_index] = '\0'; //Null terminate the string if null terminator reached
     }
-    return arguments; //Returns the arguments array
 }
 
 void process_input(void)

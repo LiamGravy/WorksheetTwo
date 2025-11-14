@@ -23,6 +23,7 @@ static struct Command ShellCommands[] =
 void shell_print(char* args)
 {
     printf(args, 1); //Prints to the framebuffer
+    newline();
 }
 
 void shell_exit(char* args)
@@ -34,7 +35,8 @@ void shell_exit(char* args)
 void shell_help(char* args)
 {
     (void)args; //args not needed
-    printf("Available commands:\n", 1);
+    printf("Available commands:", 1);
+    newline();
     for (int i = 0; ShellCommands[i].name != 0; i++) //Loops through ShellCommands array 
     {
         printf(" - ", 1);
@@ -55,12 +57,13 @@ void get_buffer(char* input_buffer)
     {
         if (index >= 255) //Exits while loop if buffer full
         {
-            input_buffer[index] = '\0'; //Null terminate the string
+            //input_buffer[index] = '\0'; //Null terminate the string         <-------------------------------------------- Moved this to line 64 and it worky
             break;
         };
         input_buffer[index] = c; //Stores the character in the buffer
         index++;
     };
+    input_buffer[index] = '\0'; //Null terminate the string
 }
 
 void split_on_space(char* buffer, char* function)

@@ -70,7 +70,17 @@ void keyboard_interrupt()
             if (ascii == '\b') //Checks if the character is a backspace
             {
                 int pos = get_cursor_position(); //Gets the current cursor position
-                
+
+                if (buffer_head_pointer != buffer_tail_pointer) 
+                {
+                   
+                    if (buffer_tail_pointer == keyboard_buffer)  // Move the tail pointer back by one
+                    {
+                        
+                        buffer_tail_pointer = keyboard_buffer + KEYBOARD_BUFFER_SIZE; // Handle wrap-around if we're at the start
+                    }
+                    buffer_tail_pointer--;
+                }
                 if (pos > 1) //Makes sure the cursor is not at cell 0 or 1
                 { 
                     if (pos % 80 == 1) //Checks if the cursor is at the start of a line (> )
@@ -113,6 +123,10 @@ void keyboard_interrupt()
             {
             char str[2] = {ascii, '\0'}; //Creates a string with the character and null terminator
             printf(str, 1); //Prints the character to the framebuffer (well and the null terminator)
+            // if (ascii != '\b') //Doesnt buffer if backspace is pressed
+            // {
+            //     buffer_keyboard_input(ascii); //Buffers the character
+            // }
             buffer_keyboard_input(ascii); //Buffers the character
             }
         }

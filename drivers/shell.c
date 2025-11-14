@@ -5,6 +5,8 @@
 void shell_print(char* args);
 void shell_exit(char* args);
 void shell_help(char* args);
+void shell_version(char* args);
+void shell_clear(char* args);
 
 struct Command //Creates the template for the Shell Commands 
 {
@@ -17,6 +19,8 @@ static struct Command ShellCommands[] =
     {"print", shell_print},
     {"exit", shell_exit},
     {"help", shell_help},
+    {"version", shell_version},
+    {"clear", shell_clear},
     {0, 0} //Null command to signify end of array
 };
 
@@ -43,6 +47,19 @@ void shell_help(char* args)
         printf(ShellCommands[i].name, 1); //Prints out each command name
         newline();
     }
+}
+
+void shell_version(char* args)
+{
+    (void)args; //args not needed
+    printf("Brainhurt version 1.0.0", 1);
+    newline();
+}
+
+void shell_clear(char* args)
+{
+    (void)args; //args not needed
+    clear_screen(); //Clears the screen
 }
 
 

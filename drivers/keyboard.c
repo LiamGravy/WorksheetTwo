@@ -111,6 +111,7 @@ void keyboard_interrupt()
             {
             char str[2] = {ascii, '\0'}; //Creates a string with the character and null terminator
             printf(str, 1); //Prints the character to the framebuffer (well and the null terminator)
+            buffer_keyboard_input(ascii); //Buffers the character
             }
         }
         return;

@@ -37,4 +37,61 @@ static struct Command ShellCommands[] =
     {0, 0} //Null command to signify end of array
 };
 
+//Processing the input
 
+char* get_buffer()
+{
+    char input_buffer[256]; //Buffer to hold the input command
+    int index = 0;
+    char c;
+    while(c = keyboard_pop_head_char())
+    {
+        if (c == '\n' || index >= 255) //Exits while loop if newline or buffer full
+        {
+            input_buffer[index] = '\0'; //Null terminate the string
+            break;
+        };
+        input_buffer[index] = c; //Stores the character in the buffer
+        index++;
+    };
+    return input_buffer; //Returns the buffer
+}
+
+char* split_on_space(char* buffer)
+{
+    char function[256]; //Buffer to hold the function
+    int index = 0; 
+    while(buffer[index] != ' ' && buffer[index] != '\0') //Loops until space or null terminator
+    {
+        function[index] = buffer[index]; //Stores the character in the function buffer
+        index++;
+    }
+    return function; //Returns the function array
+}
+
+char* split_after_space(char* buffer)
+{
+    char arguments[256]; //Buffer to hold the arguments
+    int buffer_index = 0;
+    int arg_index = 0;
+    while(buffer[buffer_index] != ' ' && buffer[buffer_index] != '\0')
+    {
+        buffer_index++; //Skips to the space or null terminator
+    }
+
+    if (buffer[buffer_index] == ' ') //If space found, move to next character
+    {
+        buffer_index++;
+        while(buffer[buffer_index] != '\0') //Loops until null terminator
+        {
+            arguments[arg_index] = buffer[buffer_index]; //Stores the character in the arguments buffer
+            buffer_index++;
+            arg_index++;
+        }
+    }
+    else if (buffer[buffer_index] == '\0')
+    {
+        arguments[arg_index] = '\0'; //Null terminate the string if null terminator reached
+    }
+    return arguments ; //Returns the arguments array
+}

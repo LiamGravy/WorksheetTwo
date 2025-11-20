@@ -52,7 +52,7 @@ void shell_help(char* args)
 void shell_version(char* args)
 {
     (void)args; //args not needed
-    printf("Brainhurt version 1.0.0", 1);
+    printf("Brainhurt version 1.1.3", 1);
     newline();
 }
 

@@ -2,9 +2,9 @@ segment .text
 global outb
 
     outb:
-        mov al, [esp+8]
-        mov dx, [esp+4]
-        out dx, al
+        mov al, [esp+8] ;Moves the data to be set to the al register
+        mov dx, [esp+4] ;Moves the address from the I/O port to the dx register
+        out dx, al  ;Writes a byte to the given I/O port
         ret
 
 global inb

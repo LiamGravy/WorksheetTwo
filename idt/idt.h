@@ -8,7 +8,7 @@ struct idt_entry_struct
     unsigned char reserved; // Set to zero
     unsigned char attributes; //Type and atrributes of the interrupt
     unsigned short isr_high; //The higher 16 bits of the ISR address
-} __attribute__((packed));
+} __attribute__((packed)); //Stops the compiler from adding any padding bytes (GCC)
 
 typedef struct idt_entry_struct idt_entry_t;
 
@@ -16,13 +16,13 @@ struct idt_pointer_struct
 {
     unsigned short limit; //The 16 bit size/limit of the IDT
     unsigned int base; //The 32 bit address of the first element in the IDT
-} __attribute__((packed));
+} __attribute__((packed)); //Stops the compiler from adding any padding bytes (GCC)
 
-typedef struct idt_pointer_struct idt_ptr_t;
+typedef struct idt_pointer_struct idt_ptr_t; 
 
-struct cpu_state_struct
+struct cpu_state_struct //Creates the structure to hold the CPU state during an interrupt
 {
-    unsigned int eax;
+    unsigned int eax; 
     unsigned int ebx;
     unsigned int ecx;
     unsigned int edx;
@@ -34,7 +34,7 @@ struct cpu_state_struct
 
 typedef struct cpu_state_struct cpu_state_t;
 
-struct stack_state_struct
+struct stack_state_struct //Creates the structure to hold the stack state during an interrupt
 {
     unsigned int error_code;
     unsigned int eip;
@@ -44,11 +44,11 @@ struct stack_state_struct
 
 typedef struct stack_state_struct stack_state_t;
 
-void interrupt_handler(cpu_state_t cpu, unsigned int interrupt, stack_state_t stack);
-void init_idt(void);
-extern void load_idt(unsigned int);
-extern void enable_interrupts(void);
+void interrupt_handler(cpu_state_t cpu, unsigned int interrupt, stack_state_t stack); //Main interrupt handler
+void init_idt(void); //Initialises the IDT
+extern void load_idt(unsigned int); //Loads the IDT
+extern void enable_interrupts(void); //Enables CPU interrupts
 
 
-extern unsigned int interrupt_handlers[34];
+extern unsigned int interrupt_handlers[34]; //Array of interrupt handler addresses defined in idt_asm.s
 #endif

@@ -15,12 +15,12 @@ static gdt_entry_t gdt_entries[SEGMENT_DESCRIPTOR_COUNT];
 
 void gdt_set_gate(int index, unsigned int base_address, unsigned int limit, unsigned char access_byte, unsigned char gran)
 {
-    gdt_entries[index].base_low = base_address & 0xFFFF;
-    gdt_entries[index].base_middle = (base_address >> 16) & 0xFF;
-    gdt_entries[index].base_high = (base_address >> 24) & 0xFF;
-    gdt_entries[index].limit_low = limit & 0xFFFF;
-    gdt_entries[index].access = access_byte;
-    gdt_entries[index].granularity = (gran & 0xF0) | ((limit >> 16) & 0x0F);
+    gdt_entries[index].base_low = base_address & 0xFFFF; // Sets the lower 16 bits of the base address
+    gdt_entries[index].base_middle = (base_address >> 16) & 0xFF; // Sets the next 8 bits of the base address
+    gdt_entries[index].base_high = (base_address >> 24) & 0xFF; // Sets the last 8 bits of the base address
+    gdt_entries[index].limit_low = limit & 0xFFFF; // Sets the lower 16 bits of the limit
+    gdt_entries[index].access = access_byte; // Sets the access byte
+    gdt_entries[index].granularity = (gran & 0xF0) | ((limit >> 16) & 0x0F); //
 }
 
 void init_gdt()

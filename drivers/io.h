@@ -61,6 +61,8 @@ void framebuffer_write_cell(unsigned int i, char c, unsigned char fg, unsigned c
 char framebuffer_read_cell(unsigned int i); //Reads a character from the framebuffer at position i
 int fb_write_string(const char* str); //Writes a string to the framebuffer
 void set_text_colour(unsigned int fg, unsigned int bg); //Sets the text colour for framebuffer output (fg and bg)
+void set_background_color(unsigned int bg); //Sets the background color for framebuffer output
+void set_foreground_color(unsigned int fg); //Sets the foreground color for framebuffer output
 
 void newline(); //Moves the cursor to the start of the next line
 void clear_screen(); //Clears the framebuffer screen (by setting all cells to ' ')
@@ -90,5 +92,11 @@ void printf(const char* str, unsigned int option); //Custon Printf function to p
 /* Function used for PIC */
 void io_wait(void); //Just a function to create a small delay for the PIC to process commands
 
+/* Functions for shell*/
+int sum_of_three(int arg1, int arg2, int arg3); //Returns the sum of three integers
+
+int mult_of_three(int arg1, int arg2, int arg3); //Returns the multiplication of three integers
+
+int max_of_three(int arg1, int arg2, int arg3); //Returns the maximum of three integers
 
 #endif

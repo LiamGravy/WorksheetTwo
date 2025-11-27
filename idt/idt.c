@@ -29,7 +29,6 @@ void interrupt_handler(cpu_state_t cpus, unsigned int interrupt, stack_state_t s
         return; 
     }
 
-
     if(interrupt == KEYBOARD_INTERRUPT) //Keyboard interrupt (code 33)
     {
         keyboard_interrupt();  //Handles keyboard interrupts

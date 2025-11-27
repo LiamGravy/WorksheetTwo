@@ -76,7 +76,7 @@ void clear_screen()
     {
         if (i % 80 == 0) //Checks if it is the first position of a row
         {
-            framebuffer_write_cell(i, '>', FB_WHITE, BG_BLACK); //Writes a > character at the start of each row
+            framebuffer_write_cell(i, '|', FB_WHITE, BG_BLACK); //Writes a > character at the start of each row
         }
         else 
         {
@@ -146,6 +146,16 @@ void set_text_colour(unsigned int fg, unsigned int bg)
     bg_colour = bg;
 }
 
+void set_background_color(unsigned int bg)
+{
+    bg_colour = bg;
+}
+
+void set_foreground_color(unsigned int fg)
+{
+    fg_colour = fg;
+}
+
 void newline()
 {
     unsigned int new_position = ((cursor_position/80) + 1) * 80;
@@ -170,4 +180,25 @@ char framebuffer_read_cell(unsigned int i)
 {
     char *fb = (char *) 0x000B8000;
     return fb[i * 2];  
+}
+
+int sum_of_three(int arg1, int arg2, int arg3)
+{
+return arg1 + arg2 + arg3;
+}
+
+int mult_of_three(int arg1, int arg2, int arg3)
+{
+return arg1 * arg2 * arg3;
+}
+
+int max_of_three(int arg1, int arg2, int arg3) 
+{
+    int max;
+    max = arg1;
+    if (arg2 > max) 
+        max = arg2;
+    if (arg3 > max) 
+        max = arg3;
+    return max;
 }

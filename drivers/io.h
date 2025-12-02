@@ -7,7 +7,7 @@
 #define FB_HIGH_BYTE_COMMAND 14 //Command that is sent to the command port to tell it to expect the high byte of the cursor position in the data port 
 #define FB_LOW_BYTE_COMMAND 15 //Command that is sent to the command port to tell it to expect the low byte of the cursor position in the data port
 
-#define SERIAL_CON1_BASE 0x3F8 //Base address for COM1 serial port 
+#define SERIAL_COM1_BASE 0x3F8 //Base address for COM1 serial port 
 #define SERIAL_DATA_PORT(base) (base) //Sets the data port address to 0x3F8 
 #define SERIAL_FIFO_COMMAND_PORT(base) (base + 2) //Sets the FIFO command port address to 0x3FA (0x3F8 + 2 = 0x3FA)
 #define SERIAL_LINE_COMMAND_PORT(base) (base + 3) //Sets the line command port address to 0x3FB (0x3F8 + 3 = 0x3FB)
@@ -60,6 +60,7 @@ unsigned char inb(unsigned short port); //Reads a byte from a given port
 void framebuffer_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg); //Writes a character to the framebuffer (pos i, fg, bg)
 char framebuffer_read_cell(unsigned int i); //Reads a character from the framebuffer at position i
 int fb_write_string(const char* str); //Writes a string to the framebuffer
+void fb_write_integer(unsigned int data); //Writes an integer to the framebuffer
 void set_text_colour(unsigned int fg, unsigned int bg); //Sets the text colour for framebuffer output (fg and bg)
 void set_background_color(unsigned int bg); //Sets the background color for framebuffer output
 void set_foreground_color(unsigned int fg); //Sets the foreground color for framebuffer output
@@ -80,12 +81,13 @@ This is needed because different devices may require different baud rates for co
 void serial_configure_line(unsigned short com); //Configures the serial line command port (com is the base address) Configure line sets the data bits, stop bits and parity.
 void serial_configure_FIFO(unsigned short com); //Configures the FIFO buffer of the serial port (com is the base address). (First in First Out)
 void serial_configure_modem(unsigned short com); //Configures the modem command port (com is the base address). This sets up the modem control signals like RTS (Request to Send) and DSR (Data Set Ready).
-void init_serial(unsigned short com, unsigned short baud_divisor); //Initializes the serial port with the given baud rate divisor
+void init_serial(unsigned short baud_divisor); //Initializes the serial port with the given baud rate divisor
 int serial_is_transmit_empty(unsigned short com); //Checks if the transmit FIFO queue is empty (com is the base address)
 
-void serial_write_character(unsigned short com, unsigned char data); //Writes a character to the serial port 
-void serial_write_integer(unsigned short com, unsigned int data); //Writes an integer to the serial port
-int serial_write_string(unsigned short com, const char* str); //Writes a string to the serial port
+void serial_write_character(unsigned char data); //Writes a character to the serial port 
+void serial_write_integer(unsigned int data); //Writes an integer to the serial port
+int serial_write_string(const char* str); //Writes a string to the serial port
+void serial_newline();
 
 /* Function used by both serial and framebuffer */
 void printf(const char* str, unsigned int option); //Custon Printf function to print to either serial or framebuffer based on option

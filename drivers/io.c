@@ -1,4 +1,5 @@
 #include "io.h"
+#include "shell.h"
 
 /* Framebuffer cursor position and text colours */
 static unsigned int cursor_position = 0; //Initial cursor position at top left of screen, cell 0
@@ -38,43 +39,54 @@ int serial_is_transmit_empty(unsigned short com)
     return inb(SERIAL_LINE_STATUS_PORT(com)) & 0x20; //Checks if the 5th bit of the line status register is set. If it is then it is empty
 }
 
-void init_serial(unsigned short com, unsigned short baud_divisor)
+void init_serial(unsigned short baud_divisor)
 {
-    serial_configure_baud_rate(com, baud_divisor); //Configures the baud rate with the given divisor
-    serial_configure_line(com); //Configures the line to 8 bits, no parity, one stop bit
-    serial_configure_FIFO(com); //Configures the FIFO
-    serial_configure_modem(com); //Configures the modem
+    serial_configure_baud_rate(SERIAL_COM1_BASE, baud_divisor); //Configures the baud rate with the given divisor
+    serial_configure_line(SERIAL_COM1_BASE); //Configures the line to 8 bits, no parity, one stop bit
+    serial_configure_FIFO(SERIAL_COM1_BASE); //Configures the FIFO
+    serial_configure_modem(SERIAL_COM1_BASE); //Configures the modem
 }
 
 /* Writes a character to the serial port */
-void serial_write_character(unsigned short com, unsigned char data) 
+void serial_write_character(unsigned char data) 
 {
-    while (serial_is_transmit_empty(com) == 0) //Loops around until it is empty
+    while (serial_is_transmit_empty(SERIAL_COM1_BASE) == 0) //Loops around until it is empty
     {
-        //Waits for the transmit FIFO queue to be empty
+        io_wait();//Waits for the transmit FIFO queue to be empty
     }
-    outb(SERIAL_DATA_PORT(com), data); //Writes the character to the data port
+    outb(SERIAL_DATA_PORT(SERIAL_COM1_BASE), data); //Writes the character to the data port
 
 }
 
 /* Writes an integer to the serial port */
-void serial_write_integer(unsigned short com, unsigned int data) 
+void serial_write_integer(unsigned int data) 
 {
-    while (serial_is_transmit_empty(com) == 0) //Loops around until the serial port is clear
+    while (serial_is_transmit_empty(SERIAL_COM1_BASE) == 0) //Loops around until the serial port is clear
     {
         //Waits for the transmit FIFO queue to be empty
     }
-    outb(SERIAL_DATA_PORT(com), data); //Writes the integer to the data port
+
+    char tempstring[16];
+    integer_to_char(data, tempstring); //Converts the integer to a string
+    for (int i =0; tempstring[i] != '\0'; i++) //
+    {
+        serial_write_character((unsigned char) tempstring[i]); //Writes each character to the serial port
+    }
 }
 
 /* Writes a string to the serial port */
-int serial_write_string(unsigned short com, const char* str) 
+int serial_write_string(const char* str) 
 {
     for (int i =0; str[i] != '\0'; i++) //Loops through each character in the string until the null terminator is reached
     {
-        serial_write_character(com, (unsigned char) str[i]); //Writes each character to the serial port
+        serial_write_character((unsigned char) str[i]); //Writes each character to the serial port
     }
     return 1; //Returns 1 when finsihed
+}
+
+void serial_newline()
+{
+    serial_write_character('\n'); //Writes a newline character to the serial port
 }
 
 /* Clears the screen by setting all cells to ' ' except the first position of each row which is a > */
@@ -119,6 +131,14 @@ int fb_write_string(const char* str)
    
 }
 
+void fb_write_integer(unsigned int data) 
+{
+    char tempstring[16];
+    integer_to_char(data, tempstring); //Converts the integer to a string
+    fb_write_string(tempstring); //Writes the string to the framebuffer
+}
+
+
 /*Moves the cursor to a specific position */
 void framebuffer_move_cursor(unsigned short pos)
 {
@@ -134,11 +154,20 @@ void printf(const char* str, unsigned int option)
 {
     if (option == 0) //Serial
     {
-        serial_write_string(SERIAL_CON1_BASE, str);
+        serial_write_string(str);
     }
     else if (option == 1) //FrameBuffer
     {
         fb_write_string(str);
+    }
+    else if (option == 2) //Both
+    {
+        serial_write_string(str);
+        fb_write_string(str);
+    }
+    else
+    {
+        fb_write_string("Invalid option for printf function: Use 0 for serial, 1 for framebuffer, 2 for both.");
     }
 }
 

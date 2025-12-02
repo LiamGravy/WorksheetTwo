@@ -365,4 +365,75 @@ Before we can use the serial port it must be configured.
 ---
 
 ##### Configuring the Modem
-When we are transmitting data we only want to send data during the baud rate up pulse and when reciever is ready. We commun 
+- When we are transmitting data we only want to send data during the baud rate up pulse and when reciever is ready. We simply set this by setting the control bits for Ready to Transmit (RTT) and Data Terminal Ready (DTR) to 1.
+- The command for this is `0x03` which we sent to the Modem Command Port `0x3FC`
+
+---
+
+*Configure the Modem*
+
+<img src = "readmeImages/ConfigureModem.png" width = 40 % />
+
+---
+
+Now that all of the serial port configuration is complete this can all be wrapped in a serial_init function to be called when we want to use the serial port.
+
+#### Writing to the Serial Port
+To write to the serial port we simply need to check if the RTT is set to 1. If it is not then we just wait a small amount of time and check again. 
+We can write ascii characters simply by sending the data to the serial Data Port `0x3F8`
+
+I have implemented the ability to write strings which is done simply by looping through the string until the null terminator is hit and writing each character. 
+
+#### Testing the serial port
+To test the serial port i will write a test string to the seriallog.txt file. 
+
+---
+
+*Testing code in kmain.c*
+
+<img src = "readmeImages/TestingSerialPortCode.png" width = 40% />
+
+---
+
+*The output from testing code*
+
+<img src = "readmeImages/TestingSerialPort.png" width = 40% />
+
+---
+
+### Bringing together the Framebuffer and Serial Port
+Now both the serial port and framebuffer have been created and have working apis i will put them together into a printf function that will allow the user to write to either the framebuffer or serial port or both.
+I will use the format: printf("text", option) 
+- Option 0: Serial port
+- Option 1: Framebuffer
+- Option 2: Both 
+
+---
+
+*Printf function*
+
+<img src = "readmeImages/PrintfFunction.png" width = 40% />
+
+---
+
+### Testing Task 3
+
+---
+
+*Testing code*
+
+<img src = "readmeImages/TestingAPICode.png" width = 40% />
+
+---
+
+*Test result: Serial*
+
+<img src = "readmeImages/TestingAPISerial.png" width = 40%>
+
+---
+
+*Test result: Framebuffer*
+
+<img src = "readmeImages/TestingAPIFB.png" width = 40% />
+
+---

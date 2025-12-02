@@ -58,14 +58,29 @@ void kmain()
     // max_of_threes(10, 25, 15); //Test max_of_three function
 
     clear_screen();
-    set_text_colour(FB_CYAN, BG_BLACK);
-    fb_write_string("This is testing the framebuffer write string");
-    newline();
-    set_text_colour(FB_RED, BG_BLACK);
-    fb_write_string("This is testing the newline function");
-    set_text_colour(FB_GREEN, BG_BLACK);
-    newline();
-    fb_write_string("This is testing the set text colour function");
+    // set_text_colour(FB_CYAN, BG_BLACK);
+    // fb_write_string("This is testing the framebuffer write string");
+    // newline();
+    // set_text_colour(FB_RED, BG_BLACK);
+    // fb_write_string("This is testing the newline function");
+    // set_text_colour(FB_GREEN, BG_BLACK);
+    // newline();
+    // fb_write_string("This is testing the set text colour function");
 
+
+    init_serial(3); //Initializes the serial port with baud rate divisor 3 (which is 38400 baud)
+    serial_write_string("Testing the serial port write string function");
+    serial_newline();
+    serial_write_string("Testing writing an integer to serial: ");
+    serial_write_integer(123);
+    serial_newline();
+    printf("Printing to Serial Only", 0);
+    serial_newline();
+    printf("Printing to Framebuffer Only", 1);
+    newline();
+    printf("Writing integer to Framebuffer: ", 1);
+    fb_write_integer(123);
+    newline();
+    printf("Printing to Both Serial and Framebuffer", 2);
 
 }

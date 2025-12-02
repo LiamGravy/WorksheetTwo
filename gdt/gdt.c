@@ -20,7 +20,7 @@ void gdt_set_gate(int index, unsigned int base_address, unsigned int limit, unsi
     gdt_entries[index].base_high = (base_address >> 24) & 0xFF; // Sets the last 8 bits of the base address
     gdt_entries[index].limit_low = limit & 0xFFFF; // Sets the lower 16 bits of the limit
     gdt_entries[index].access = access_byte; // Sets the access byte
-    gdt_entries[index].granularity = (gran & 0xF0) | ((limit >> 16) & 0x0F); //
+    gdt_entries[index].granularity = (gran & 0xF0) | ((limit >> 16) & 0x0F); //Granulatrity sets the unit of measurement for the limit. 
 }
 
 void init_gdt()

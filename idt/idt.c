@@ -25,6 +25,7 @@ void interrupt_handler(cpu_state_t cpus, unsigned int interrupt, stack_state_t s
 
     if(interrupt == 32) //Timer interrupt (broke without this)
     {
+        
         pic_acknowledge_interrupt(interrupt); //Acknowledge the PIC
         return; 
     }

@@ -450,3 +450,16 @@ To test the coordinate based set_cursor_position i added to the testing code: ``
 
 # Worksheet Two Part Two - Brainhurt OS
 
+The goal of Worksheet Two Part Two is to work to implement chapters 5 and 6 of the Little Book of OS Development. Adding a Global Descriptor Table (GDT), Interrupt Descriptor Table (IDT), Interrupt Handler, Remapped Programamble Interrupt Controller (PIC), Keyboard Driver and Shell/Bash. 
+
+All of these programs except the shell was written prior to Worksheet Two Part Twos release and the release of the provided sourcecode. As such none of the given code was used in this assignment.
+
+## The Global Descriptor Table
+
+The Global Descriptor Table (GDT) is a core structure in the x86 architecture used to define memory segments and their access rights. We use it to define Privilege Levels (Rings). By assigning different privilege levels to kernel and user code, the GDT prevents unauthorised programs from executing privileged instructions or accessing kernel memory.
+
+### Defining the GDT Structure
+The GDT is an array of 8 byte segment descriptors. Each descriptor defines the following:
+- Base Address
+- The Limit (size)
+- Access Flags

@@ -14,4 +14,3 @@ global inb
         in al, dx         ;Read a byte from the I/O port and stores it in the al register
         ret               ;Returns the read byte
 
-

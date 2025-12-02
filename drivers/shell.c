@@ -1,6 +1,7 @@
 #include "shell.h"
 #include "io.h"
 #include "keyboard.h"
+#include "../snake/snake.h"
 
 void shell_print(char* args);
 void shell_sum(char* args);
@@ -13,6 +14,7 @@ void shell_exit(char* args);
 void shell_help(char* args);
 void shell_version(char* args);
 void shell_clear(char* args);
+void shell_snake(char* args);
 
 int string_to_integer(char* str);
 void integer_to_char(int num, char* string);
@@ -34,6 +36,7 @@ static struct Command ShellCommands[] =
     {"set-bg", shell_set_bg, " | Set the background color. Provide a number from 0-15."},
     {"set-fg", shell_set_fg, " | Set the foreground color. Provide a number from 0-15."},
     {"colour-codes", shell_colour_codes, " | Displays the available colour codes for bg and fg."},
+    {"snake", shell_snake, " | Starts the BrainHurt Snake game."},
     {"exit", shell_exit, " | Write exit to quit the shell."},
     {"help", shell_help, " | Write help to see this message."},
     {"version", shell_version, " | Displays the current version of Brainhurt."},
@@ -147,6 +150,12 @@ void shell_colour_codes(char* args)
     printf("13: Light Magenta", 1); newline();
     printf("14: Light Brown", 1); newline();
     printf("15: White", 1); newline();
+}
+
+void shell_snake(char* args)
+{
+    (void)args; //args not needed
+    start_snake(); //Starts the snake game
 }
 
 void shell_exit(char* args)

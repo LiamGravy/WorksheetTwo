@@ -13,11 +13,11 @@
 #define MaxSnakeLength 2000 //Max length of snake in cells (80x25)
 
 
-unsigned int SnakeHeadPosition;
-unsigned int previousPosition;
-unsigned int CurrentapplePosition;
+ int SnakeHeadPosition;
+ int previousPosition;
+ int CurrentapplePosition;
 unsigned int direction; //0=up, 1=right, 2=down, 3=left
-unsigned int SnakeBody[MaxSnakeLength];
+int SnakeBody[MaxSnakeLength];
 unsigned int CurrentSnakeLength = 0;
 unsigned int gameRunning = 0;
 
@@ -25,16 +25,17 @@ unsigned int gameRunning = 0;
 void start_snake()
 {
     clear_screen();
-    set_text_colour(FB_GREEN, BG_BLACK);
+    set_text_colour(FB_GREEN, BG_LIGHT_BLUE);
     printf("Press any key to begin BrainHurt Snake", 1);
 
-    while(keyboard_pop_head_char() == 0)
+    while(keyboard_pop_head_char() == 0 && EnterPressed == 0)
     {
         // Wait for key press
     }
-
-    clear_screen();
-    SnakeHeadPosition = 1000; //Start snake in middle of screen
+    keyboard_on = 0; // Disable keyboard input for the game
+    snakeClean();
+    set_background_color(BG_LIGHT_BLUE);
+    SnakeHeadPosition = 480; //Start snake in middle of screen
     SnakeBody[0] = SnakeHeadPosition; // Initialize the first segment of the snake's body
     CurrentapplePosition = randomlyPlaceFood();
     direction = 1; //Start moving right
@@ -53,21 +54,24 @@ void start_snake()
 int randomlyPlaceFood()
 {
     int applePosition = getRandomNumber(0, 1999); //Get random position for apple in grid 80x25 (2000 cells)
-    framebuffer_write_cell(applePosition, '@', FB_RED, BG_BLACK); //Place apple at random position
+    framebuffer_write_cell(applePosition, '@', FB_RED, BG_LIGHT_BLUE); //Place apple at random position
     return applePosition;
 }
 
 void move_snake(unsigned int direction)
 {
+
+    previousPosition = SnakeHeadPosition;
+
     int current_row = SnakeHeadPosition / NumOfCols;
     int current_col = SnakeHeadPosition % NumOfCols;
 
     if (CurrentSnakeLength > 0)
     {
-        framebuffer_write_cell(SnakeBody[CurrentSnakeLength - 1], ' ', FB_BLACK, BG_BLACK); //Erase tail segment
+        framebuffer_write_cell(SnakeBody[CurrentSnakeLength - 1], ' ', FB_BLACK, BG_LIGHT_BLUE); //Erase tail segment
     }
 
-    framebuffer_write_cell(SnakeHeadPosition, ' ', FB_BLACK, BG_BLACK); //Erase head before moving
+    framebuffer_write_cell(SnakeHeadPosition, ' ', FB_BLACK, BG_LIGHT_BLUE); //Erase head before moving
 
     for (int i = CurrentSnakeLength - 1; i > 0; i--)
     {
@@ -79,7 +83,7 @@ void move_snake(unsigned int direction)
         SnakeBody[0] = SnakeHeadPosition; 
     }
 
-    if (direction == 0 && current_row > TOP_BORDER) //Up
+    if (direction == 0 && current_row > TOP_BORDER-1) //Up
     {
         SnakeHeadPosition -= 80;
     }
@@ -87,7 +91,7 @@ void move_snake(unsigned int direction)
     {
         SnakeHeadPosition += 1;
     }
-    else if (direction == 2 && current_row < BOTTOM_BORDER) //Down
+    else if (direction == 2 && current_row < BOTTOM_BORDER + 1) //Down
     {
         SnakeHeadPosition += 80;
     }
@@ -95,6 +99,7 @@ void move_snake(unsigned int direction)
     {
         SnakeHeadPosition -= 1;
     }
+    
 }
 
 void increase_snake_length()
@@ -107,10 +112,10 @@ void increase_snake_length()
         } 
         else
         {
-            SnakeBody[CurrentSnakeLength] = SnakeHeadPosition; //If first segment, set to head position
+            SnakeBody[CurrentSnakeLength] = previousPosition; //If first segment, set to head position
         }
+        CurrentSnakeLength++;
     }
-    CurrentSnakeLength++;
 }
 
 void handle_input() {
@@ -133,23 +138,29 @@ void handle_input() {
         }
         else if (c == 'q') 
         {
-            gameRunning = 0; // Quit key
+            snakeEnd(); 
         }
     }
 }
 
 void drawSnake()
 {
-    framebuffer_write_cell(SnakeHeadPosition, 'O', FB_GREEN, BG_BLACK); //Draw head
+    framebuffer_write_cell(SnakeHeadPosition, 'O', FB_GREEN, BG_LIGHT_BLUE); //Draw head
 
     for (unsigned int i = 0; i < CurrentSnakeLength; i++)
     {
-        framebuffer_write_cell(SnakeBody[i], 'o', FB_GREEN, BG_BLACK); //Draw body segments
+        framebuffer_write_cell(SnakeBody[i], 'o', FB_GREEN, BG_LIGHT_BLUE); //Draw body segments
     }
 }
 
 void update_game()
 {
+
+    if (SnakeHeadPosition / NumOfCols < TOP_BORDER || SnakeHeadPosition / NumOfCols > BOTTOM_BORDER || SnakeHeadPosition % NumOfCols < LEFT_BORDER || SnakeHeadPosition % NumOfCols > RIGHT_BORDER)
+    {
+        snakeEnd();
+    }
+
     move_snake(direction);
     if (SnakeHeadPosition == CurrentapplePosition)
     {
@@ -161,7 +172,7 @@ void update_game()
     {
         if (SnakeHeadPosition == SnakeBody[i])
         {
-            gameRunning = 0; // End game on self-collision
+            snakeEnd(); // End game on self-collision
         }
     }
     drawSnake();
@@ -171,4 +182,24 @@ void wait()
 {
     unsigned int start_ticks = get_timer_ticks();
     while ((get_timer_ticks() - start_ticks) < 5) {}
+}
+
+void snakeClean() 
+{
+    for (unsigned int i = 0; i < 80 *25; i++) //Loops through all cells of the framebuffer (80 columns x 25 rows)
+    {
+    framebuffer_write_cell(i, ' ', 0, BG_LIGHT_BLUE); 
+    }
+    framebuffer_move_cursor(0); 
+}
+
+void snakeEnd()
+{
+    gameRunning = 0;
+    keyboard_on = 1; // Re-enable keyboard input
+    clear_screen();
+    set_text_colour(FB_RED, BG_BLACK);
+    printf("Game Over! Your score: ", 1);
+    fb_write_integer(CurrentSnakeLength);
+    newline();
 }

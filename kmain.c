@@ -7,7 +7,7 @@
 #include "./snake/randomNumberGenerator.h"
 #include "./drivers/keyboard.h"
 
-volatile int EnterPressed = 0; // Flag to indicate if a keyboard interrupt has occurred
+
 
 int sum_of_threes(int arg1, int arg2, int arg3)
 {

@@ -8,6 +8,8 @@ static unsigned char keyboard_buffer[KEYBOARD_BUFFER_SIZE]; // Buffer to store k
 static unsigned char* buffer_head_pointer = keyboard_buffer; // Pointer to the head of the buffer
 static unsigned char* buffer_tail_pointer = keyboard_buffer; // Pointer to the tail of the buffer
 
+volatile int EnterPressed = 0; // Flag to indicate if a keyboard interrupt has occurred
+volatile int keyboard_on = 1; 
 
 unsigned char keyboard_read_scancode(void) //Reads a scancode from the keyboard data port
 {
@@ -111,8 +113,11 @@ void keyboard_interrupt()
             else if (ascii == '\n') //Checks if the character is a newline
             {
                 //Jump to the shell file to check if it is a command
-                newline(); //Writes a newline 
-                EnterPressed = 1;
+                if (keyboard_on == 1)
+                {
+                    newline(); //Writes a newline 
+                }
+                    EnterPressed = 1;
                 // process_input(); //Processes the input from the keyboard buffer
                 return;
             }
@@ -123,8 +128,11 @@ void keyboard_interrupt()
             }
             else                  //Prints the input character
             {
-            char str[2] = {ascii, '\0'}; //Creates a string with the character and null terminator
-            printf(str, 1); //Prints the character to the framebuffer (well and the null terminator)
+                if (keyboard_on == 1)
+                {
+                    char str[2] = {ascii, '\0'}; //Creates a string with the character and null terminator
+                    printf(str, 1); //Prints the character to the framebuffer (well and the null terminator)
+                }
             buffer_keyboard_input(ascii); //Buffers the character
             }
         }

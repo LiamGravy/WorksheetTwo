@@ -9,5 +9,7 @@ void handle_input();
 void drawSnake();
 void update_game();
 void wait();
+void snakeClean();
+void snakeEnd();
 
 #endif

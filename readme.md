@@ -444,6 +444,6 @@ To test the coordinate based set_cursor_position i added to the testing code: ``
 
 *Test Result: Move cursor with coordinates*
 
-<img src = "readmeImages/TestingMoveCursor.png" width = 40 />
+<img src = "readmeImages/TestingMoveCursor.png" width = 40% />
 
 ---

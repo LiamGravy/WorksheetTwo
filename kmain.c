@@ -68,19 +68,27 @@ void kmain()
     // fb_write_string("This is testing the set text colour function");
 
 
-    init_serial(3); //Initializes the serial port with baud rate divisor 3 (which is 38400 baud)
+    init_serial(3); 
     serial_write_string("Testing the serial port write string function");
     serial_newline();
+
     serial_write_string("Testing writing an integer to serial: ");
     serial_write_integer(123);
     serial_newline();
+
     printf("Printing to Serial Only", 0);
     serial_newline();
+
     printf("Printing to Framebuffer Only", 1);
     newline();
+
     printf("Writing integer to Framebuffer: ", 1);
     fb_write_integer(123);
     newline();
+
     printf("Printing to Both Serial and Framebuffer", 2);
+    newline();
+
+    set_cursor_position(79, 24);
 
 }

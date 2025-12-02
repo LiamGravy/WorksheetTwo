@@ -437,3 +437,13 @@ I will use the format: printf("text", option)
 <img src = "readmeImages/TestingAPIFB.png" width = 40% />
 
 ---
+
+To test the coordinate based set_cursor_position i added to the testing code: ```set_cursor_position(79,24);``` Which should move the cursor to the bottom right of the frame buffer.
+
+---
+
+*Test Result: Move cursor with coordinates*
+
+<img src = "readmeImages/TestingMoveCursor.png" width = 40 />
+
+---

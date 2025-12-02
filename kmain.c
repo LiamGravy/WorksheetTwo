@@ -5,7 +5,9 @@
 #include "./drivers/shell.h"
 #include "./drivers/timerInterrupt.h"
 #include "./snake/randomNumberGenerator.h"
+#include "./drivers/keyboard.h"
 
+volatile int EnterPressed = 0; // Flag to indicate if a keyboard interrupt has occurred
 
 int sum_of_threes(int arg1, int arg2, int arg3)
 {
@@ -56,6 +58,15 @@ void kmain()
     set_text_colour(FB_GREEN, BG_BLACK); // Set the fg and bg colours for text output (colours found in io.h)
     enable_interrupts(); //Enables interrupts 
     get_timer_ticks();
+
+    while(1)
+    {
+        if(EnterPressed == 1)
+        {
+            EnterPressed = 0;
+            process_input(); //Processes the input from the keyboard buffer
+        }
+    }
 
     // sum_of_threes(5, 10, 15); //Test sum_of_three function
     // mult_of_threes(2, 3, 4); //Test mult_of_three

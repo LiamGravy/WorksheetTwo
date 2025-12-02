@@ -1,6 +1,7 @@
 #include "keyboard.h"
 #include "io.h"
 #include "shell.h"
+#include "../idt/idt.h"
 
 #define KEYBOARD_BUFFER_SIZE 256 // Size of the keyboard input buffer
 static unsigned char keyboard_buffer[KEYBOARD_BUFFER_SIZE]; // Buffer to store keyboard input
@@ -111,7 +112,8 @@ void keyboard_interrupt()
             {
                 //Jump to the shell file to check if it is a command
                 newline(); //Writes a newline 
-                process_input(); //Processes the input from the keyboard buffer
+                EnterPressed = 1;
+                // process_input(); //Processes the input from the keyboard buffer
                 return;
             }
             else if (ascii == ESC) //Checks if the character is the escape key

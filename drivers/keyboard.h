@@ -6,6 +6,8 @@
 #define EXIT_CODE 0x00      // The code to send to exit QEMU
 #define ESC 27              // ASCII code for the escape key
 
+extern volatile int EnterPressed; // Flag to indicate if a keyboard interrupt has occurred
+
 unsigned char keyboard_read_scancode(void); //Reads a scancode from the keyboard data port
 unsigned char map_keyboard_scan_to_ascii(unsigned char scan_code); //Maps scan codes to ASCII characters
 

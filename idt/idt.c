@@ -2,6 +2,7 @@
 #include "pic.h"
 #include "../drivers/io.h"
 #include "../drivers/keyboard.h"
+#include "../drivers/timerInterrupt.h"
 
 #define IDT_SIZE 256
 #define KEYBOARD_INTERRUPT 33 //The keyboard interrupt is number 33
@@ -25,8 +26,7 @@ void interrupt_handler(cpu_state_t cpus, unsigned int interrupt, stack_state_t s
 
     if(interrupt == 32) //Timer interrupt (broke without this)
     {
-        
-        pic_acknowledge_interrupt(interrupt); //Acknowledge the PIC
+        timer_interrupt_handler();
         return; 
     }
 

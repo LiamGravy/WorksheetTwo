@@ -27,18 +27,18 @@ loader:
     extern max_of_threes
     extern kmain ;Tells the assembler that kmain is an external function
     call kmain ;Calls the kmain function
-    push dword 5 ;Pushes the integer 5 onto the stack 
-    push dword 10 ;Pushes the integer 10 onto the stack
-    push dword 15 ;Pushes the integer 15 onto the stack
-    call sum_of_threes ;Calls the sum_of_threes function
-    push dword 2
-    push dword 3
-    push dword 4
-    call mult_of_threes
-    push dword 10
-    push dword 25
-    push dword 15
-    call max_of_threes
+    ;push dword 5 ;Pushes the integer 5 onto the stack 
+    ;push dword 10 ;Pushes the integer 10 onto the stack
+    ;push dword 15 ;Pushes the integer 15 onto the stack
+    ;call sum_of_threes ;Calls the sum_of_threes function
+    ;push dword 2
+    ;push dword 3
+    ;push dword 4
+    ;call mult_of_threes
+    ;push dword 10
+    ;push dword 25
+    ;push dword 15
+    ;call max_of_threes
 
 .loop:
     jmp .loop ;Infinite loop to prevent the kernel from exiting

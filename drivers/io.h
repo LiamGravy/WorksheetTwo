@@ -80,6 +80,7 @@ This is needed because different devices may require different baud rates for co
 void serial_configure_line(unsigned short com); //Configures the serial line command port (com is the base address) Configure line sets the data bits, stop bits and parity.
 void serial_configure_FIFO(unsigned short com); //Configures the FIFO buffer of the serial port (com is the base address). (First in First Out)
 void serial_configure_modem(unsigned short com); //Configures the modem command port (com is the base address). This sets up the modem control signals like RTS (Request to Send) and DSR (Data Set Ready).
+void init_serial(unsigned short com, unsigned short baud_divisor); //Initializes the serial port with the given baud rate divisor
 int serial_is_transmit_empty(unsigned short com); //Checks if the transmit FIFO queue is empty (com is the base address)
 
 void serial_write_character(unsigned short com, unsigned char data); //Writes a character to the serial port 

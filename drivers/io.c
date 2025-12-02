@@ -38,6 +38,14 @@ int serial_is_transmit_empty(unsigned short com)
     return inb(SERIAL_LINE_STATUS_PORT(com)) & 0x20; //Checks if the 5th bit of the line status register is set. If it is then it is empty
 }
 
+void init_serial(unsigned short com, unsigned short baud_divisor)
+{
+    serial_configure_baud_rate(com, baud_divisor); //Configures the baud rate with the given divisor
+    serial_configure_line(com); //Configures the line to 8 bits, no parity, one stop bit
+    serial_configure_FIFO(com); //Configures the FIFO
+    serial_configure_modem(com); //Configures the modem
+}
+
 /* Writes a character to the serial port */
 void serial_write_character(unsigned short com, unsigned char data) 
 {

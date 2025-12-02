@@ -214,7 +214,7 @@ NOTE: The book and I have used a char pointer for the framebuffer and so byte of
 - ```| (fg & 0x0F)``` This makes sure that only the lower 4 bits are set. Then adds the top 4 bits (bg) to the lower 4 bits (fg)
 
 #### To move the cursor
-To move the cursor we need to interract with the Framebuffers Command and Data ports. These are at the addresses ```0x3D4``` Command and ```0x3D5``` Data. To move the cursor we need to send the data port the new postion of the cursor but since the framebuffer is 2000 cells large an 8 bit number cannot be used as (2^8 = 256 < 2000) so we need to send over a 16 bit number since (2^16 = 65536 > 2000). However this causes an issue as the ```out``` command in x86-32 assembly only accepts 8 bit arguments so the position needs to be sent in two chunks. To solve this the Framebuffer Command port uses the command ```14``` and ```15``` to tell it wether it is expecting the high 8 bits or the low 8 bits of the position into the data port. 
+To move the cursor we need to interract with the Framebuffers Command and Data ports. These are at the addresses ```0x3D4``` Command and ```0x3D5``` Data. To move the cursor we need to send the data port the new postion of the cursor but since the framebuffer is 2000 cells large an 8 bit number cannot be used as (2^8 = 256 < 2000) so we need to send over a 16 bit number since (2^16 = 65536 > 2000). However this causes an issue as the ```out``` command in x86-32 assembly only accepts 8 bit arguments so the position needs to be sent in two chunks. To solve this the Framebuffer Command port uses the command ```14``` and ```15``` to tell it whether it is expecting the high 8 bits or the low 8 bits of the position into the data port. 
 
 ---
 
@@ -238,7 +238,13 @@ The `out` command we need to use to send the position to the framebuffer ports i
 <img src = "readmeImages/WrappingOutFunction.png" width = 40% />
 
 ### Building framebuffer driver
-The framebuffer driver needs to abstract all the complexities of writing characters to the framebuffer, advancing the cursor and moving to newlines. Providing the user with a simple command to print characters. For example print("A") to print the letter A to the next cell in the framebuffer.
+The framebuffer driver needs to abstract all the complexities of writing characters to the framebuffer, advancing the cursor and moving to newlines. Providing the user with a simple commands to print characters and move to newlines. 
+
+
+
+#### Printing Strings
+Within the API i have built a ```fb_write_string``` function that can take a string input and output said string to the framebuffer. 
+For example `fb_write_string("Testing")` to print the string "Testing" to the next cells in the framebuffer.
 To do this we will need to pass a character pointer to our function, this will point to the first character in our string. The function will then loop around until it hits the null terminator (`'\0'`) as this is the end of the string. Within the loop we must check that the current cursor position is not at the start of a newline (`position % 80 == 0`) as this is reserved for a `|` character denoting each writable line of the framebuffer. This isnt strictally necessary but i think it looks better. Finally the program will write the character to the framebuffer using our ```framebuffer_write_cell``` function written earlier and advance the cursor by one.
 
 ---
@@ -249,9 +255,114 @@ To do this we will need to pass a character pointer to our function, this will p
 
 ---
 
-#### Code Explanation
+##### Code Explanation
 
 - ```cursor_position % 80 == 0``` This checks if the current cursor position is at the start of a new row. ie; cells 0, 80, 160, 240...
 
 - ```framebuffer_write_cell(cursor_position, str[i], fg_colour, bg_colour)``` This calls the write cell function and passes the arguments. The fg_colour and bg_colour are set by a different function: `set_text_colour`
 
+#### Writing Newlines
+In the current functionality of the OS the user can write strings to the framebuffer and move the cursor to specific cells, however keeping track of the specific cells to jump to when moving to a new line maybe tricky for the user. So i have abstracted this behind a `newline()` function that does it automatically when called. 
+To do this we can use integer division in C, as all decimal values are truncated since we are working with integers and not floats. This allows us to find what row the cursor currently is in. For example: row 0 contains cells 0-79 any number between that range `/ 80` will return 0 decimal something but c ignores the decimal so we are left with 0.
+
+---
+
+*Newline function for the framebuffer*
+
+<img src = "readmeImages/FbNewline.png" width = 70% />
+
+---
+
+##### Code Explanation
+- ```(cursor_position/80)``` Finds what row the cursor is currently at
+- ```(cursor_position/80) + 1``` Finds the next row
+- ```((cursor_position/80)+1)*80```Finds the starting cell number of the row
+- ```if (new_position%60==0)```This simply makes sure to leave the first cell in each row free for a `|` character.
+
+#### Clearing The Screen
+Currently the framebuffer is full of garbage data that was dumped in during the booting of Brainhurt OS. This makes it very ugly and uses up some of the 2000 available cells. So i have extended the API to include a clear_screen() function.
+
+This function simply loops through all 2000 framebuffer cells and sets them all to space 'blank' character except the first cell of each row that is reserved for a `|` denoting writable lines of the framebuffer.
+
+---
+
+*Clear Screen function for the framebuffer*
+
+<img src = "readmeImages/FbClearScreen.png" width = 50% />
+
+---
+
+##### Code Explanation
+- ```for (unsigned int i = 0; i < 80 * 25, i++)```This loops through all 2000 cells of the framebuffer (0-1999)
+
+#### Testing Framebuffer Driver
+
+---
+
+*Kmain.c commands to test framebuffer functions*
+
+<img src = "readmeImages/KmainTestingFBFunctions.png" width = 50% />
+
+---
+
+*Framebuffer output of the testing*
+
+<img src = "readmeImages/TestingFBFunctions.png" width = 40% />
+
+---
+
+### Building the Serial Port Driver
+There are other ways of writing and recieving data other than the framebuffer, for example the serial ports. The book uses the serial ports for error logging, but we wont be able to do this since the error logging is a utility of Bochs and we are using QEMU. I have set up the serial ports so the user can write text to `seriallog.txt` file.
+
+#### Configuring the Serial Ports
+Before we can use the serial port it must be configured. 
+
+
+##### Baud Rate
+ - First we must set the speed of the data being sent, this is called the baud rate it basically tells the devices communicating when exactly to check the data port for new data. 
+- We need to do this because the serial ports use serial communication that is asynchronous this means that there is no clock pulse being sent alongside the data so the devices would have have no idea when to expect data being sent. 
+- Both devices have their own clock, the serial port has a clock that runs at 115,200 bits per second this a standard speed so the device trying to communicate with it should know the speed of the clock.
+- To configure the baud rate the communicating device sends the serial port a divisor. Which divides the 115,200 bits per second to the baud rate that is used for the duration of the communication.
+- The divisor can be a 16 bit number (as some devices would need a very slow baud rate) but like the ```move cursor``` section the port can only recieve 8 bits a time, so we need to send the Serial Line Command port `0x3FB` the command `0x80` this sets the DLAB bit to 1. Which tells the serial port to expect a 16 bit communication with the high 8 bits being sent to the data port first and then the low 8 bits.
+
+---
+
+*Configuring Baud Rate*
+
+<img src = "readmeImages/ConfiguringBaudRate.png" width = 40% />
+
+###### Code explanation
+- ```divisor >> 8``` Performs a bit shift right of 8 bits. Moves all of the bits from the high byte to the low byte.
+- ```& 0x00FF``` Performs a bitwise AND to make sure only the the low byte has set data
+
+
+
+##### Line Configuration
+- The data is sent one bit at a time with a predefined frame size that tells the port how large each block of data being sent is: normally 8 bits (1 byte). 
+- We will be sending ascii data, which is a 7 bits but we will be adding 1 bit to the end which is a stop bit. This tells the serial port that it has recieved all the bits in the current phase. 
+- To set this up we need to send the Serial Line Command port `0x3FB` the command `0x03`.
+-  The Line Command Port will look at the first two bits (bit 0 and 1) to know how many bits a character will have. There are four options either: 5 bits per character (0,0), 6 bits per character (0,1), 7 bits per character (1,0) or 8 bits per character (1,1)
+- We are sending 7 bit ascii with one stop bit, so each character is 8 bits so we choose the final option: 8 bits per character (1,1) giving us the command `0x03` = 0000 0011 
+
+---
+
+*Configuring Line Rate*
+
+<img src = "readmeImages/ConfiguringLine.png" width = 40% />
+
+---
+
+##### Configuring the Buffers
+- When we send data to the serial ports that data is stored in a buffer. This is to hold data incase we send data faster than it can be transmitted. These buffers however will overflow if we send too much data at once, which will cause overflow errors and havoc. So we can set the buffers to FIFO queues that will send out data based on First in First out principles and to destroy any extra data that is recieved while the buffer is full. 
+- To set this we must send the command ```0xC7``` = 11000111 to the FIFO command port `0x3FA`
+
+---
+
+*Configure FIFO buffer*
+
+<img src = "readmeImages/ConfigureFIFO.png" width = 40% />
+
+---
+
+##### Configuring the Modem
+When we are transmitting data we only want to send data during the baud rate up pulse and when reciever is ready. We commun 

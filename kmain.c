@@ -48,15 +48,24 @@ int max_of_threes(int arg1, int arg2, int arg3)
 
 void kmain()
 {
-    init_gdt(); // Initialize the Global Descriptor Table
-    init_idt(); // Initialize the Interrupt Descriptor Table
-    clear_screen(); //Clear the screen of all the initial junk
-    set_text_colour(FB_GREEN, BG_BLACK); // Set the fg and bg colours for text output (colours found in io.h)
-    enable_interrupts(); //Enables interrupts 
+    // init_gdt(); // Initialize the Global Descriptor Table
+    // init_idt(); // Initialize the Interrupt Descriptor Table
+    // clear_screen(); //Clear the screen of all the initial junk
+    // set_text_colour(FB_GREEN, BG_BLACK); // Set the fg and bg colours for text output (colours found in io.h)
+    // enable_interrupts(); //Enables interrupts 
     // sum_of_threes(5, 10, 15); //Test sum_of_three function
     // mult_of_threes(2, 3, 4); //Test mult_of_three
     // max_of_threes(10, 25, 15); //Test max_of_three function
 
+    clear_screen();
+    set_text_colour(FB_CYAN, BG_BLACK);
+    fb_write_string("This is testing the framebuffer write string");
+    newline();
+    set_text_colour(FB_RED, BG_BLACK);
+    fb_write_string("This is testing the newline function");
+    set_text_colour(FB_GREEN, BG_BLACK);
+    newline();
+    fb_write_string("This is testing the set text colour function");
 
 
 }

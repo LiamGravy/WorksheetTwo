@@ -450,7 +450,7 @@ To test the coordinate based set_cursor_position i added to the testing code: ``
 
 # Worksheet Two Part Two - Brainhurt OS
 
-The goal of Worksheet Two Part Two is to work to implement chapters 5 and 6 of the Little Book of OS Development. Adding a Global Descriptor Table (GDT), Interrupt Descriptor Table (IDT), Interrupt Handler, Remapped Programamble Interrupt Controller (PIC), Keyboard Driver and Shell/Bash. 
+The goal of Worksheet Two Part Two is to implement chapters 5 and 6 of the Little Book of OS Development. Adding a Global Descriptor Table (GDT), Interrupt Descriptor Table (IDT), Interrupt Handler, Remapped Programamble Interrupt Controller (PIC), Keyboard Driver and Shell/Bash. 
 
 All of these programs except the shell was written prior to Worksheet Two Part Twos release and the release of the provided sourcecode. As such none of the given code was used in this assignment.
 
@@ -458,8 +458,132 @@ All of these programs except the shell was written prior to Worksheet Two Part T
 
 The Global Descriptor Table (GDT) is a core structure in the x86 architecture used to define memory segments and their access rights. We use it to define Privilege Levels (Rings). By assigning different privilege levels to kernel and user code, the GDT prevents unauthorised programs from executing privileged instructions or accessing kernel memory.
 
-### Defining the GDT Structure
+### Defining the GDT Structure and Loading 
 The GDT is an array of 8 byte segment descriptors. Each descriptor defines the following:
-- Base Address
-- The Limit (size)
-- Access Flags
+- Base Address (32 bits)
+- The Limit (size) (20 bits)
+- Flags (8 bits)
+- Access byte (4 bits)
+
+The Descriptors are split in strange ways detailed below.
+Base Address (split in 3)
+- Low 16 bits
+- Middle 8 bits
+- High 8 bits
+Limit (split in 2)
+- low 16 bits
+- high 4 bits
+
+---
+
+*GDT descriptor setting*
+
+<img src = "readmeImages/GDTDescriptors.png" width = 40% />
+
+---
+
+#### Code Explanation
+
+In the above code the the descriptors are mapped to the functions as follows:
+
+- Base Address (low 16 bits) - > `base_low`
+- Base Address (middle 8 bits) - > `base_middle`
+- Base Address (high 8 bits) - > `base_high`
+- Limit (low 16 bits) - > `limit_low`
+- Limit (High 4 bits) - > `Granularity` (low 4)
+- Flags (4 bits) - > `Granularity` (high 4)
+- Access (8 bits) - > `Access`
+
+### Initialising GDT
+To intialise the gdt for the OS we need to define 3 segments using the following parameters.
+- Null Descriptor Segment - (0, 0, 0, 0, 0)
+This is always the first entry to the gdt. All 0s as it is unused
+- Kernel Code Segement - (1, 0 , 0xFFFFF, 0x9A, 0xCF)
+Defines a 4GB, 32 bit Ring 0 Segment. This is where our kernel code will live
+- Kernel Data Segement - (2, 0 , 0xFFFFF, 0x92, 0xCF)
+Defines a 4GB, 32 bit Ring 0 Segment. Where our data will live. The difference being that this segement is not executable.
+
+## Remapping the PIC
+The PIC (Programmable Interrupt Controller) is a little chip that sits between hardware devices and the CPU. It is needed because multiple hardware devices sending interrupts to the CPU would bog it down and be far to slow. So the PIC sits inbetween and takes upto 8 Interrupt requests and consolidates them into one interrupt signal that it passes to the CPU. 
+However the PIC chip is limited to 8 IRQs so when computers starting being more functional they soon used up all of these IRQs and so a solution was created: put two PIC chips together in a master slave configuration. This means that slave PIC is attached to one of the 8 Master PIC IRQ lines which increases the total number of IRQs to 15 -(7 one the master, 8 on the slave). So now 15 interrupt requests can be sent to the cpu on only a single line. 
+However the problems continue.
+As the arcitecture got more developed the original values that the CPU used to look up what the interrupts the IDT was sending got overwritten by more important CPU exceptions. This means that we have to remap these original values (vector range) to the new values. 
+
+### Setting the Master Slave Configuration 
+We need to tell the Master Pic that it has a slave, We then need to give the slave a cascade identity 
+which is basically an ID number so the Master PIC knows what slave an interrupt came from.
+
+We will tell the Master there is a slave at IRQ2 - 0000 0100 or (denary 4) this looks odd because the master uses a bitmap which starts at 0. So the second IRQ is actually in the 3rd The slave doesnt use a bitmap so we can just send in binary 2 0000 0010
+
+---
+
+*Telling the master it has a slave by giving a cascade identity to the slave*
+
+<img src = "readmeImages/SettingMasterSlave.png" width = 40% />
+
+---
+
+### Remapping to the new interrupt vectors
+To map to the new vectors we just need to send `0x20` (32 denary) to the master PIC data port and `0x28` (40) to the slave PIC data port. 
+ 
+---
+
+*Remapping the PICs*
+
+<img src = "readmeImages/RemappingPICs.png" width = 40% />
+
+---
+
+## Creating an Interrupt Descriptor Table (IDT)
+Now that the PIC has been implemented the CPU recieves interrupt codes through a single interrupt line. These interrupts have been given vector codes and so the CPU does not know what to do with these codes. This is the job of the Interrupt Descriptor Table, to take these vector codes and map them to the the interrupt handlers (Interrupt Service Routine ISR). 
+
+### Setting an IDT Entry
+To set an IDT entry we need to pass in the following parameters:
+- index of the IDT (this should be the vector code)
+- isr-address the location in memory where the code for handling each interrupt is written. These are then mapped to the correct bit locations in the idt structure.
+
+---
+
+*Setting IDT entry*
+
+<img src = "readmeImages/SettingIDT.png" width = 40% />
+
+---
+
+### Handling an Interrupt in the IDT asm
+When an interrupt hits the IDT the kernel and hardware that is interrupting is actively using the registers. This poses a problem because the IDT needs to route the interrupt to the correct Interrupt Service Routine (ISR) using them same registers. So the first step of handling the interrupts is to push all of the active registers onto the stack. This provides the IDT with a clean set of registers while preserving the contents of the registers the kernel/programs are using. 
+Once the registers are safely stored the interrupt handler can engage and route the interrupts to accordingly. 
+
+---
+
+*Pushing registers to save state*
+
+<img src = "readmeImages/SavingRegisterState.png" width = 40% />
+
+---
+
+### Handing the Interrupts and Interrupt Service Routines
+Once the registers are pushed onto the stack, the IDT can start working out how to handle each interrupt. In the case of this project the important ones we need to worry about are interrupt 32 and 33. With 32 being the Timer Interrupt and 33 the Keyboard interrupt.
+
+#### Timer Interrupt
+The timer interrupt its simple to handle with a simple `pic_acknowledge_interrupt` preventing the infinite boot loop. I have extended this to add extra functionality for my snake game where i use the timer interupts to count game ticks. 
+
+#### Keyboard Interrupt
+The Timer interrupt is slighly more tricky to handle as it is the entry point for out keyboard driver. The first port of call in the keyboard interrupt is to read the scancode from the keyboard data port `0x60` this is then instantly mapped to the ascii character. 
+Once the character is recieved the driver can handle special characters like `\b` and `\n`, adding to the circular input buffer and printing user input to frame buffer. 
+
+---
+
+*Scanning and mapping to ascii*
+
+<img src = "readmeImages/ScanAndMap.png" width = 40% />
+
+---
+
+
+
+
+
+
+
+

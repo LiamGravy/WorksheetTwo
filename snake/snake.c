@@ -15,8 +15,7 @@
 #define FB_COLOUR FB_LIGHT_GREEN
 
 #define NUMBER_OF_APPLES 10
-#define GAME_SPEED 4 //Lower is faster
-
+#define GAME_SPEED 3 //Lower is faster
 
  int SnakeHeadPosition;
  int previousPosition;
@@ -26,7 +25,6 @@ int SnakeBody[MaxSnakeLength];
 int ApplePositions[NUMBER_OF_APPLES];
 unsigned int CurrentSnakeLength = 0;
 unsigned int gameRunning = 0;
-
 
 void start_snake()
 {
@@ -55,15 +53,19 @@ void start_snake()
         update_game();
         wait();
     }
-
+    clear_screen();
+    set_text_colour(FB_RED, BG_BLACK);
+    printf("Game Over! Your score: ", 1);
+    fb_write_integer(CurrentSnakeLength);
+    newline();
+    set_text_colour(FB_GREEN, BG_BLACK);
 
 }
-
 
 int randomlyPlaceFood()
 {
     int applePosition = getRandomNumber(0, 1999); //Get random position for apple in grid 80x25 (2000 cells)
-    framebuffer_write_cell(applePosition, '@', FB_COLOUR, BG_COLOUR); //Place apple at random position
+    framebuffer_write_cell(applePosition, '@', FB_RED, BG_COLOUR); //Place apple at random position
     return applePosition;
 }
 
@@ -122,7 +124,6 @@ if (direction == 0) //Up
     }
 }
     
-
 void increase_snake_length()
 {
     if (CurrentSnakeLength < MaxSnakeLength)
@@ -205,6 +206,7 @@ void wait()
 
 void snakeClean() 
 {
+    clear_screen();
     for (unsigned int i = 0; i < 80 *25; i++) //Loops through all cells of the framebuffer (80 columns x 25 rows)
     {
     framebuffer_write_cell(i, ' ', 0, BG_COLOUR); 
@@ -216,11 +218,16 @@ void snakeEnd()
 {
     gameRunning = 0;
     keyboard_on = 1; // Re-enable keyboard input
-    wait();
-    clear_screen();
-    set_text_colour(FB_RED, BG_BLACK);
-    printf("Game Over! Your score: ", 1);
-    fb_write_integer(CurrentSnakeLength);
-    newline();
-    set_text_colour(FB_GREEN, BG_BLACK);
+    
+    for (int i = 0; i < MaxSnakeLength; i++)
+    {
+        SnakeBody[i] = 0;
+    }
+    for (int i = 0; i < NUMBER_OF_APPLES; i++)
+    {
+        ApplePositions[i] = 0;
+    }
+    CurrentSnakeLength = 0;
+    set_text_colour(FB_BLACK, BG_BLACK);
+    snakeClean();
 }

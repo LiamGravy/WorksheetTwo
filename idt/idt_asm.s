@@ -30,7 +30,6 @@ common_interrupt_handler:                  ;The common parts of the interrupt ha
     push edi
     push ebp
     push esp 
-    
 
     call interrupt_handler                 ;Call the C interrupt handler function (in idt.c)
                                            ;Restore the registers: The reverse of the push
